@@ -93,14 +93,14 @@ jobs:
           echo "SCREENSHOT_URL: ${SCREENSHOT_URL}" || true
       - name: Post Screenshot URL
         if: ${{ always() && github.event_name == 'pull_request' && github.run_status != 'cancelled' }}
-        uses: actions/github-script@v4
+        uses: actions/github-script@v6
         with:
           script: |
             const prNumber = context.payload.pull_request.number;
             const screenshotURL = process.env.SCREENSHOT_URL;
             if (screenshotURL) {
               const commentBody = `Seems like the test succeeded. Temporary screenshot URL: ${screenshotURL}`;
-              await github.issues.createComment({
+              await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
@@ -109,7 +109,7 @@ jobs:
             } else {
               const runURL = `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${{ github.run_id }}`;
               const commentBody = `The test was unable to make a screenshot. Most likely, the test did not succeed. Please check the [logs of the test run](${runURL}).`;
-              await github.issues.createComment({
+              await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: prNumber,
