@@ -73,6 +73,14 @@ jobs:
               fi
             done
           fi
+          #Screenshot URL will always fail if other users don't trigger the 'Check log' step.
+          SCREENSHOT_URL=$(cat log.txt | grep -o -e "https://i.imgur.com.*.png") || true
+          if [[ -z "${SCREENSHOT_URL}" ]]; then
+            echo "No screenshot URL found."
+            exit 1
+          fi
+          echo "SCREENSHOT_URL=$SCREENSHOT_URL" >> $GITHUB_ENV || true
+          echo "SCREENSHOT_URL: ${SCREENSHOT_URL}" || true
           # xpra stop :99
           killall Xvfb
           # bundle exec jekyll build # https://help.github.com/en/articles/viewing-jekyll-build-error-messages#configuring-a-third-party-service-to-display-jekyll-build-error-messages
